@@ -1,0 +1,25 @@
+{
+	"name": "pebble-online-users",
+	"version": "0.0.1",
+	"description": "Tracks the status of all online pebble players.",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"express": "^4.14.0",
+		"routes": "^2.1.0"
+	},
+	"engines": {
+		"node": "4.4.5"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/brgishy/pebble-online-users.git"
+	},
+	"keywords": [
+		"node",
+		"express"
+	],
+	"license": "MIT"
+}
