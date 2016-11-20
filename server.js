@@ -1,50 +1,60 @@
 var express = require('express');
 var router = express.Router();
 var app = express();
+var onlineUsers = {};
 
-var onlineStatuses = {
-  "DK83KDLFJE": { displayName: "brgishy", serverIp: "127.0.0.1", room: "hub_01" },
-  "89SKDJR837": { displayName: "pauly_pants", serverIp: "127.0.0.1", room: "hub_01" }
-};
-
-// a middleware function with no mount path. This code is executed for every request to the router
-router.use(function (req, res, next) {
-  // if (req.headers.secret !== process.env.SECRET) {
-  //   res.status(500).send('Invalid Secret Key');
-  // } else {
-    next();  
-  // }
-});
-
-router.get("/", function (request, response) {
+// returns the static index page, which lists all users (not routed)
+app.get("/", function (request, response) {
   response.sendFile(__dirname + '/views/index.html');
 });
 
-router.get("/users", function (request, response) {
+// gets all users currently online  (not routed)
+app.get("/all_users", function (request, response) {
   
-  var vls = [];
+  var values = [];
   
-  for (var key in onlineStatuses) {
-    vls.push(onlineStatuses[key]);
+  for (var key in onlineUsers) {
+    values.push(JSON.stringify(onlineUsers[key]));
   }
   
-  response.send(vls);
+  response.status(200).send(values);
 });
 
-router.post("/dreams", function (request, response) {
-  
-  if (hasSecreteKey(request) === false) {
-    response.sendStatus(400);
-    return;
+// a middleware function with no mount path. This code is executed for every request to the router
+router.use(function (req, res, next) {
+  if (req.headers.secret !== process.env.SECRET) {
+     res.status(500).send('Invalid Secret Key');
+  } else {
+    next();
   }
+});
+
+// gets the status of the given user
+router.get("/user/:id", function (request, response) {
+  response.status(200).send(onlineUsers[request.params.id]);
+});
+
+// updates the status of a user, json body must have "id" property
+router.post("/update_status", function (request, response) {
+  
+  var body = [];
+  
+  // getting the body request
+  request.on('data', function(chunk) {
+    body.push(chunk);
+  }).on('end', function() {
+    var status = JSON.parse(Buffer.concat(body).toString());
+    onlineUsers[status.id] = status;
+  });
   
   response.sendStatus(200);
 });
 
+// setting up the app to use the routing object and static files
 app.use(express.static('public'));
 app.use('/', router);
 
-// setting the port this app should listin on
+// starting the app
 var listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
