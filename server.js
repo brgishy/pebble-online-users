@@ -25,10 +25,10 @@ app.get("/users", function (request, response) {
 
 app.post("/dreams", function (request, response) {
   
-  // if (hasSecreteKey(request) === false) {
-  //   response.sendStatus(400);
-  //   return;
-  // }
+  if (hasSecreteKey(request) === false) {
+    response.sendStatus(400);
+    return;
+  }
   
   response.sendStatus(200);
 });
@@ -38,5 +38,5 @@ var listener = app.listen(process.env.PORT, function () {
 });
 
 function hasSecreteKey(request) {
-  return request.headers.hasOwnProperty('secrete') && request.headers['secrete'] === 'ec1774b1-1dcb-4ba4-bbfa-522b916f9eae';
+  return request.headers.hasOwnProperty('secrete') && request.headers.secrete === 'ec1774b1-1dcb-4ba4-bbfa-522b916f9eae';
 }
